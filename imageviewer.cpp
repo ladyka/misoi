@@ -44,6 +44,9 @@
 #endif
 
 #include "imageviewer.h"
+int RED = 1;
+int GREEN = 2;
+int BLUE = 3;
 
 //! [0]
 ImageViewer::ImageViewer()
