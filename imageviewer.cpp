@@ -312,17 +312,13 @@ int ImageViewer::getH1(QImage * image, int w, int h)
     matrixGREY[2][1] = matrixGREY[2][1]*(-2);
     matrixGREY[2][2] = matrixGREY[2][2]*(-1);
     int det = getDet(matrixGREY);
-     std::cout << "det " << det  << std::endl;
     return det;
 }
 
 //checkmatr
 int ImageViewer::getDet(int ** a)
 {
-    std::cout << a[0][0] << " " << a[0][1] << " " << a[0][2] << std::endl;
-    std::cout << a[1][0] << " " << a[1][1] << " " << a[1][2] << std::endl;
-    std::cout << a[2][0] << " " << a[2][1] << " " << a[2][2] << std::endl;
-    return a[0][0]*a[1][1]*a[2][2]+a[2][0]*a[0][1]*a[1][2]+a[1][0]*a[2][1]*a[0][2]-a[2][0]*a[1][1]*a[0][2]-a[1][0]*a[0][1]*a[2][2]-a[0][0]*a[2][1]*a[1][2];
+    return a[0][0]+a[1][1]+a[2][2]+a[2][0]+a[0][1]+a[1][2]+a[1][0]+a[2][1]+a[0][2];
 }
 
 //checkmatr
