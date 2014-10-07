@@ -44,9 +44,9 @@
 #endif
 
 #include "imageviewer.h"
-int RED = 1;
-int GREEN = 2;
-int BLUE = 3;
+const int RED = 1;
+const int GREEN = 2;
+const int BLUE = 3;
 
 //! [0]
 ImageViewer::ImageViewer()
@@ -286,10 +286,11 @@ void ImageViewer::sobelF()
     {
         for (int wi = 1; wi < w-1; ++wi)
         {
-            int h1 = getH1(&(image),wi,hi);
-            int h2 = getH2(&(image),wi,hi);
-            int s = (int) sqrt(h1*h1 + h2*h2);
-            QRgb rgb = qRgb(s,s,s);
+            QRgb rgb = qRgb(
+                        getNewGRB(image,wi,hi,RED),
+                        getNewGRB(image,wi,hi,GREEN),
+                        getNewGRB(image,wi,hi,BLUE)
+                        );
 
             outImage.setPixel(wi,hi,rgb);
         }
@@ -299,9 +300,9 @@ void ImageViewer::sobelF()
 
 
 
-int ImageViewer::getH1(QImage * image, int w, int h)
+int ImageViewer::getH1(QImage * image, int w, int h, int readOrGreenOrBlue)
 {
-    int ** matrixGREY = getMatrixGrey(image,w,h);
+    int ** matrixGREY = getMatrixGrey(image,w,h, readOrGreenOrBlue);
 
     matrixGREY[0][0] = matrixGREY[0][0]*(1);
     matrixGREY[0][1] = matrixGREY[0][1]*(2);
@@ -325,7 +326,7 @@ int ImageViewer::getDet(int ** a)
 }
 
 //checkmatr
-int ** ImageViewer::getMatrixGrey(QImage * image, int w, int h)
+int ** ImageViewer::getMatrixGrey(QImage * image, int w, int h, int redOrGreenOrBlue)
 {
     QRgb matrixRGB[3][3] = {
         image->pixel(w-1,h-1),image->pixel(w,h-1),image->pixel(w+1,h-1),
@@ -337,17 +338,40 @@ int ** ImageViewer::getMatrixGrey(QImage * image, int w, int h)
     for (int i = 0; i < 3; i++) {
         matrixGREY[i] = new int[3];
         for (int j = 0; j < 3; j++) {
-            int g = qGray(matrixRGB[i][j]);
+            int g;
+            switch (redOrGreenOrBlue) {
+            case RED:
+                g = qRed(matrixRGB[i][j]);
+                break;
+            case GREEN:
+                g = qGreen(matrixRGB[i][j]);
+                break;
+            case BLUE:
+                g = qBlue(matrixRGB[i][j]);
+                break;
+            default:
+                g = 0;
+                break;
+            }
             matrixGREY[i][j] = g;
         }
     };
     return matrixGREY;
 }
 
-
-int ImageViewer::getH2(QImage *image, int w, int h)
+int ImageViewer::getNewGRB(QImage image, int wi, int hi, int readOrGreenOrBlue)
 {
-    int ** matrixGREY = getMatrixGrey(image,w,h);
+    int h1 = getH1(&(image),wi,hi,readOrGreenOrBlue);
+    int h2 = getH2(&(image),wi,hi,readOrGreenOrBlue);
+    int s = (int) sqrt(h1*h1 + h2*h2);
+
+    return s;
+}
+
+
+int ImageViewer::getH2(QImage *image, int w, int h, int readOrGreenOrBlue)
+{
+    int ** matrixGREY = getMatrixGrey(image,w,h,readOrGreenOrBlue);
 
     matrixGREY[0][0] = matrixGREY[0][0]*(-1);
     matrixGREY[0][1] = matrixGREY[0][1]*(0);
