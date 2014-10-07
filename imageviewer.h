@@ -93,6 +93,11 @@ private:
     QScrollArea *scrollArea;
     double scaleFactor;
 
+    int getH1(QImage * image,int w,int h);
+    int getH2(QImage * image,int w,int h);
+    int getDet(int ** a);
+    int ** getMatrixGrey(QImage *image, int w, int h);
+
 #ifndef QT_NO_PRINTER
     QPrinter printer;
 #endif

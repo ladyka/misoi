@@ -276,26 +276,95 @@ void ImageViewer::sobelF()
 {
     QPixmap a = *(imageLabel->pixmap());
     QImage image = a.toImage();
-    QImage outImage(image.width(),image.height(),QImage::Format_Mono);
+    QImage outImage(image.width(),image.height(),QImage::Format_RGB32);
     int h = image.height();
     int w = image.width();
     for (int hi = 1; hi < h-1; ++hi)
     {
         for (int wi = 1; wi < w-1; ++wi)
         {
-            int h1 = getH1(image,wi,hi);
-            int h2 = getH2(image,wi,hi);
+            int h1 = getH1(&(image),wi,hi);
+            int h2 = getH2(&(image),wi,hi);
             int s = (int) sqrt(h1*h1 + h2*h2);
+            QRgb rgb = qRgb(s,s,s);
 
-            QRgb qrgb = image.pixel(wi,hi);
-
-            QColor color = QColor(qRed(qrgb),qGreen(qrgb),qBlue(qrgb));
-            color.setAlpha(s);
-            outImage.setPixel(wi,hi,color.rgba());
+            outImage.setPixel(wi,hi,rgb);
         }
     }
     imageLabel->setPixmap(QPixmap::fromImage(outImage));
 }
+
+
+
+int ImageViewer::getH1(QImage * image, int w, int h)
+{
+    int ** matrixGREY = getMatrixGrey(image,w,h);
+
+    matrixGREY[0][0] = matrixGREY[0][0]*(1);
+    matrixGREY[0][1] = matrixGREY[0][1]*(2);
+    matrixGREY[0][2] = matrixGREY[0][2]*(1);
+
+    matrixGREY[1][0] = matrixGREY[1][0]*(0);
+    matrixGREY[1][1] = matrixGREY[1][1]*(0);
+    matrixGREY[1][2] = matrixGREY[1][2]*(0);
+
+    matrixGREY[2][0] = matrixGREY[2][0]*(-1);
+    matrixGREY[2][1] = matrixGREY[2][1]*(-2);
+    matrixGREY[2][2] = matrixGREY[2][2]*(-1);
+    int det = getDet(matrixGREY);
+     std::cout << "det " << det  << std::endl;
+    return det;
+}
+
+//checkmatr
+int ImageViewer::getDet(int ** a)
+{
+    std::cout << a[0][0] << " " << a[0][1] << " " << a[0][2] << std::endl;
+    std::cout << a[1][0] << " " << a[1][1] << " " << a[1][2] << std::endl;
+    std::cout << a[2][0] << " " << a[2][1] << " " << a[2][2] << std::endl;
+    return a[0][0]*a[1][1]*a[2][2]+a[2][0]*a[0][1]*a[1][2]+a[1][0]*a[2][1]*a[0][2]-a[2][0]*a[1][1]*a[0][2]-a[1][0]*a[0][1]*a[2][2]-a[0][0]*a[2][1]*a[1][2];
+}
+
+//checkmatr
+int ** ImageViewer::getMatrixGrey(QImage * image, int w, int h)
+{
+    QRgb matrixRGB[3][3] = {
+        image->pixel(w-1,h-1),image->pixel(w,h-1),image->pixel(w+1,h-1),
+        image->pixel(w-1,h),image->pixel(w,h),image->pixel(w+1,h),
+        image->pixel(w-1,h+1),image->pixel(w,h+1),image->pixel(w+1,h+1)
+    };
+
+    int** matrixGREY = new int*[3];
+    for (int i = 0; i < 3; i++) {
+        matrixGREY[i] = new int[3];
+        for (int j = 0; j < 3; j++) {
+            int g = qGray(matrixRGB[i][j]);
+            matrixGREY[i][j] = g;
+        }
+    };
+    return matrixGREY;
+}
+
+
+int ImageViewer::getH2(QImage *image, int w, int h)
+{
+    int ** matrixGREY = getMatrixGrey(image,w,h);
+
+    matrixGREY[0][0] = matrixGREY[0][0]*(-1);
+    matrixGREY[0][1] = matrixGREY[0][1]*(0);
+    matrixGREY[0][2] = matrixGREY[0][2]*(1);
+
+    matrixGREY[1][0] = matrixGREY[1][0]*(-2);
+    matrixGREY[1][1] = matrixGREY[1][1]*(0);
+    matrixGREY[1][2] = matrixGREY[1][2]*(2);
+
+    matrixGREY[2][0] = matrixGREY[2][0]*(-1);
+    matrixGREY[2][1] = matrixGREY[2][1]*(0);
+    matrixGREY[2][2] = matrixGREY[2][2]*(1);
+    return getDet(matrixGREY);
+}
+
+
 
 void ImageViewer::zoomIn()
 {
@@ -377,7 +446,7 @@ void ImageViewer::createActions()
 
     sobel = new QAction(tr("Оператор собеля"), this);
     sobel->setEnabled(false);
-    connect(sobel,SIGNAL(triggered()), this, SLOT(sobelF());
+    connect(sobel,SIGNAL(triggered()), this, SLOT(sobelF()));
 
 
     zoomInAct = new QAction(tr("Zoom &In (25%)"), this);
@@ -482,4 +551,4 @@ void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
     scrollBar->setValue(int(factor * scrollBar->value()
                             + ((factor - 1) * scrollBar->pageStep()/2)));
 }
-//! [26]
+
