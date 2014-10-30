@@ -48,21 +48,27 @@ int RED = 1;
 int GREEN = 2;
 int BLUE = 3;
 
-//! [0]
+
 ImageViewer::ImageViewer()
 {
     imageLabel = new QLabel;
     imageLabel->setBackgroundRole(QPalette::Base);
     imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     imageLabel->setScaledContents(true);
+    imageLabel->setGeometry(QRect(0, 30, this->width(), this->height()));
+    centralWidget = new QWidget;
 
-    scrollArea = new QScrollArea;
+    scrollArea = new QScrollArea(centralWidget);
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
-    setCentralWidget(scrollArea);
+    scrollArea->setGeometry(QRect(0, 30, this->width(), this->height()));
+
+    setCentralWidget(centralWidget);
 
     createActions();
     createMenus();
+
+    createSliders();
 
     resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
     fitToWindowAct->setChecked(true);
@@ -240,7 +246,7 @@ void ImageViewer::dissectionAGenerate()
             QRgb qrgb = image.pixel(wi,hi);
             int g = qGray(qrgb);
             int c = 0;
-            if (g > 128)
+            if (g > horizontalSlider_a->value())
             {
                 c =1;
             }
@@ -264,7 +270,7 @@ void ImageViewer::dissectionBGenerate()
             QRgb qrgb = image.pixel(wi,hi);
             int g = qGray(qrgb);
             int c = 0;
-            if ((g > 85) && (g < 170))
+            if ((g > horizontalSlider_b_1->value()) && (g < horizontalSlider_b_2->value()))
             {
                 c =1;
             }
@@ -515,7 +521,31 @@ void ImageViewer::createMenus()
     menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(helpMenu);
 }
-//! [20]
+
+void ImageViewer::createSliders()
+{
+
+    horizontalSlider_a = new QSlider(centralWidget);
+    horizontalSlider_a->setObjectName(QStringLiteral("a"));
+    horizontalSlider_a->setGeometry(QRect(0, 0, 160, 29));
+    horizontalSlider_a->setOrientation(Qt::Horizontal);
+    horizontalSlider_a->setMinimum(0);
+    horizontalSlider_a->setMaximum(255);
+
+    horizontalSlider_b_1 = new QSlider(centralWidget);
+    horizontalSlider_b_1->setObjectName(QStringLiteral("b1"));
+    horizontalSlider_b_1->setGeometry(QRect(170, 0, 160, 29));
+    horizontalSlider_b_1->setOrientation(Qt::Horizontal);
+    horizontalSlider_b_1->setMinimum(0);
+    horizontalSlider_b_1->setMaximum(255);
+
+    horizontalSlider_b_2 = new QSlider(centralWidget);
+    horizontalSlider_b_2->setObjectName(QStringLiteral("b2"));
+    horizontalSlider_b_2->setGeometry(QRect(340, 0, 160, 29));
+    horizontalSlider_b_2->setOrientation(Qt::Horizontal);
+    horizontalSlider_b_2->setMinimum(0);
+    horizontalSlider_b_2->setMaximum(255);
+}
 
 //! [21]
 void ImageViewer::updateActions()

@@ -48,6 +48,7 @@
 
 #include <QRgb>
 #include <QImage>
+#include <QtWidgets/QSlider>
 #include <iostream>
 
 QT_BEGIN_NAMESPACE
@@ -85,6 +86,7 @@ private slots:
 private:
     void createActions();
     void createMenus();
+    void createSliders();
     void updateActions();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
@@ -101,7 +103,7 @@ private:
 #ifndef QT_NO_PRINTER
     QPrinter printer;
 #endif
-
+    QWidget *centralWidget;
     QAction *openAct;
     QAction *printAct;
     QAction *saveAct;
@@ -125,6 +127,10 @@ private:
     QMenu *helpMenu;
 
     QPixmap imageOriginal;
+
+    QSlider *horizontalSlider_a;
+    QSlider *horizontalSlider_b_1;
+    QSlider *horizontalSlider_b_2;
 };
 //! [0]
 
