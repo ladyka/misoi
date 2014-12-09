@@ -34,19 +34,27 @@ public:
 
 private slots:
     void on_actionOpen_triggered();
-
     void on_actionPrint_triggered();
-
     void on_actionSave_triggered();
-
     void on_pushButton_6_clicked();
+    void on_button_gistogramm_clicked();
+    void on_actionExit_triggered();
+    void on_porog_a_clicked();
+    void fitToWindow();
+
+    void on_action_Fit_to_Window_triggered();
+
+    void zoomIn();
+    void zoomOut();
+    void normalSize();
+    void on_porog_b_clicked();
 
 private:
     Ui::MainWindow *ui;
 
 
     //QLabel *imageLabel;
-    QScrollArea *scrollArea;
+    //QScrollArea *scrollArea;
     double scaleFactor;
 
     int getH1(QImage * image,int w,int h, int readOrGreenOrBlue);
@@ -82,6 +90,8 @@ private:
     QMenu *helpMenu;
 
     QPixmap imageOriginal;
+    void scaleImage(double factor);
+    void updateActions();
 };
 
 #endif // MAINWINDOW_H
