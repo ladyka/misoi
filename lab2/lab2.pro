@@ -27,3 +27,4 @@ INSTALLS += target
 wince*: {
    DEPLOYMENT_PLUGIN += qjpeg qgif
 }
+QMAKE_CXXFLAGS += -std=c++11

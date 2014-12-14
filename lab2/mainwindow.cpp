@@ -3,6 +3,7 @@
 #include <QPrintDialog>
 #endif
 
+#include <QDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -275,4 +276,141 @@ void MainWindow::on_porog_b_clicked()
     }
     ui->imageLabel->setPixmap(QPixmap::fromImage(outImage));
     fitToWindow();
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QPixmap pixmap = *(ui->imageLabel->pixmap());
+    QImage image = pixmap.toImage();
+    //if (image.format() == QImage::Format_Mono) {
+        int wight = image.width();
+        int height = image.height();
+        int countOfObject = 0;
+        int **matrix;
+
+        zeroall(matrix,wight,height);
+
+        for (int w = 1; w < wight-1; ++w) {
+            for (int h = 1; h < height-1; ++h) {
+                QRgb qrgb = image.pixel(w,h);
+                int c =  qGray(qrgb);
+                if (c == 0 ) {
+
+                    // если пиксели (x − 1,y), (x,y − 1) не отнесены ни к одной из найденных областей:
+                    int areaA = whichArea(matrix,w-1,h);
+                    int areaB = whichArea(matrix,w,h-1);
+                    if ((areaA == 0) && (areaB == 0) )
+                    {
+                        // прибавить счетчик областей n = n + 1;
+                        countOfObject++;
+
+                        //приписать пиксель (x,y) к области n;
+                        setArea(matrix,w,h,countOfObject);
+                    } else {
+                        //если только один из пикселей (x − 1,y), (x,y − 1) отнесен к одной из областей i:
+                        if ((areaA > 0) && (areaB == 0)) {
+                            //приписать пиксель (x,y) к области i;
+                            setArea(matrix,w,h,areaA);
+                        } else if ((areaB > 0) && (areaA == 0)) {
+                            //приписать пиксель (x,y) к области i;
+                            setArea(matrix,w,h,areaB);
+                        } else {
+                            //если оба пикселя (x − 1,y), (x,y − 1) отнесены к найденной области i:
+                            if (areaA == areaB) {
+                                //приписать пиксель (x,y) к области i;
+                                setArea(matrix,w,h,areaB);
+                            } else {
+                                //если оба пикселя (x − 1,y), (x,y − 1) отнесены к разным областям i, j:
+
+                                // i = j : приписать пиксель (x,y) к области i;
+                                int mainArea = minimum(areaA,areaB);
+                                setArea(matrix,w,h,mainArea);
+                                // зафиксировать эквивалентность областей i и j;
+                                updateMatrix(matrix,w,h,areaA,areaB);
+                            }
+                        }
+                    }
+                }
+
+//                1. если пиксель (x,y) помечен единицей на исходном бинарном изображении:
+//                2. 	если пиксели (x − 1,y), (x,y − 1) не отнесены ни к одной из
+//                3. 	найденных областей:
+//                4. 		прибавить счетчик областей n = n + 1;
+//                5. 		приписать пиксель (x,y) к области n;
+//                6. 	если только один из пикселей (x − 1,y), (x,y − 1) отнесен к одной из
+//                7.	 областей i:
+//                8. 		приписать пиксель (x,y) к области i;
+//                9. 	если оба пикселя (x − 1,y), (x,y − 1) отнесены к найденной
+//                10. 	области i:
+//                11. 		приписать пиксель (x,y) к области i;
+//                12. 	если оба пикселя (x − 1,y), (x,y − 1) отнесены к разным
+//                13. 	областям i, j: i = j:
+//                14. 		приписать пиксель (x,y) к области i;
+//                15. 		зафиксировать эквивалентность областей i и j;
+//                16. перейти к следующему пикселю.
+            }
+        }
+//    } else {
+//        //бінарізіруй ізображеній!!!
+//    }
+
+//        for (int i = 0; i < wight; ++i) {
+//            for (int j = 0; j < height; ++j) {
+//                std::cout << matrix[i][j] << ' ';
+//            }
+//            std::cout << std::endl;
+//        }
+            std::cout << countOfObject << std::endl;
+}
+
+
+void MainWindow::zeroall(int **&a, int wight, int height)
+{
+    a = new int * [wight];
+    for (int i = 0;i <wight; i++) {
+        *(a +i) = new int [height];
+        for (int j = 0; j<height; ++j) {
+            a[i][j] = 0;
+        }
+    }
+}
+
+/* если тру то пренадлежит какой-то области
+ */
+int MainWindow::whichArea(int **&a, int wight, int height)
+{
+    return a[wight][height];
+}
+
+void MainWindow::setArea(int **&a, int wight, int height, int area)
+{
+    a[wight][height] = area;
+}
+
+int MainWindow::minimum(int a, int b)
+{
+    if (a > b) {
+        return b;
+    }
+    return a;
+}
+
+void MainWindow::updateMatrix(int **&a, int wight, int height, int i, int j)
+{
+    int areaA;
+    int areaB;
+    if (i > j) {
+        areaA = j;
+        areaB = i;
+    } else {
+        areaA = i;
+        areaB = j;
+    }
+    for (int i = 0;i <wight; i++) {
+        for (int j = 0; j<height; ++j) {
+            if (a[i][j] == areaB) {
+                a[i][j] = areaA;
+            }
+        }
+    }
 }

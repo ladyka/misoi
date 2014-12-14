@@ -9,6 +9,10 @@
 #include <QRgb>
 #include <QImage>
 #include <iostream>
+#include <string>
+#include <iterator>
+#include <algorithm>
+#include <array>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -49,6 +53,8 @@ private slots:
     void normalSize();
     void on_porog_b_clicked();
 
+    void on_pushButton_3_clicked();
+    
 private:
     Ui::MainWindow *ui;
 
@@ -92,6 +98,12 @@ private:
     QPixmap imageOriginal;
     void scaleImage(double factor);
     void updateActions();
+
+    void zeroall(int **&a, int wight, int height);
+    int whichArea(int **&a, int wight, int height);
+    void setArea(int **&a, int wight, int height, int area);
+    int minimum(int a,int b);
+    void updateMatrix(int **&a, int wight, int height, int i, int j);
 };
 
 #endif // MAINWINDOW_H
