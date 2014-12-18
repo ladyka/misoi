@@ -54,7 +54,9 @@ private slots:
     void on_porog_b_clicked();
 
     void on_pushButton_3_clicked();
-    
+
+    void on_k_alg_but_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -104,43 +106,13 @@ private:
     void setArea(int **&a, int wight, int height, int area);
     int minimum(int a,int b);
     void updateMatrix(int **&a, int wight, int height, int i, int j);
+    int square(int **&a, int wight, int height,int elementId);
+    int perimetr(int **&a, int wight, int height,int elementId);
+    bool isPerimeterPoint(int **&a, int wight, int height, int elementId);
+    int density(int square, int perimeter);
+    int clusters;
+    int **mat;
+    int getMinIndex(int * a,int size);
 };
 
 #endif // MAINWINDOW_H
-
-
-
-
-
-//Q_OBJECT
-
-//public:
-//ImageViewer();
-
-
-//private slots:
-//void open();
-//void print();
-//void save();
-//void viewImageF();
-//void gistogramGenerate();
-//void dissectionAGenerate();
-//void dissectionBGenerate();
-//void sobelF();
-//void zoomIn();
-//void zoomOut();
-//void normalSize();
-//void fitToWindow();
-//void about();
-
-//private:
-//void createActions();
-//void createMenus();
-//void updateActions();
-//void scaleImage(double factor);
-//void adjustScrollBar(QScrollBar *scrollBar, double factor);
-
-//};
-////! [0]
-
-//#endif
