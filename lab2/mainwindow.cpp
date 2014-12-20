@@ -404,7 +404,7 @@ void MainWindow::on_pushButton_3_clicked()
         //Найти:
         //k средних векторов mj, j = 1,…, k (центров кластеров);
         //отнести каждый из векторов x_i к одному из k кластеров;
-        int **m = new  int* [countClusters];
+        //int **m = new  int* [countClusters];
 
         //Алгоритм:
         //1. Случайным образом выбрать k средних m_j j = 1,…, k;
