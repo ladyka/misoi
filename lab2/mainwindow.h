@@ -13,6 +13,7 @@
 #include <iterator>
 #include <algorithm>
 #include <array>
+#include <vector>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -46,8 +47,6 @@ private slots:
     void on_porog_a_clicked();
     void fitToWindow();
 
-    void on_action_Fit_to_Window_triggered();
-
     void zoomIn();
     void zoomOut();
     void normalSize();
@@ -56,6 +55,8 @@ private slots:
     void on_pushButton_3_clicked();
 
     void on_k_alg_but_clicked();
+
+    void on_fitToWindowAct_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -110,9 +111,17 @@ private:
     int perimetr(int **&a, int wight, int height,int elementId);
     bool isPerimeterPoint(int **&a, int wight, int height, int elementId);
     int density(int square, int perimeter);
-    int clusters;
-    int **mat;
+    int countOfObject_parce;
+    int **matrix;
+
+    int wight;
+    int height;
+
+
     int getMinIndex(int * a,int size);
+    void draw();
+
+
 };
 
 #endif // MAINWINDOW_H

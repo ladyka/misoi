@@ -212,6 +212,9 @@
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionPrint">
    <property name="text">
@@ -249,6 +252,9 @@
    </property>
    <property name="text">
     <string>&amp;Fit to Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionAbout">

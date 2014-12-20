@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    clusters  = -1;
+    countOfObject_parce  = -1;
     ui->setupUi(this);
 }
 
@@ -31,8 +31,11 @@ void MainWindow::on_actionOpen_triggered()
         mimeTypeFilters.append(mimeTypeName);
     mimeTypeFilters.sort();
     const QStringList picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+
+    // /home/user/projects/misoi/lab2
+    // QDir::currentPath()
     QFileDialog dialog(this, tr("Open File"),
-                       picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first());
+                       picturesLocations.isEmpty() ? QDir::currentPath(): "/home/user/projects/misoi/lab2" );
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setMimeTypeFilters(mimeTypeFilters);
     dialog.selectMimeTypeFilter("image/png");
@@ -212,11 +215,6 @@ void MainWindow::fitToWindow()
     updateActions();
 }
 
-void MainWindow::on_action_Fit_to_Window_triggered()
-{
-    fitToWindow();
-}
-
 
 void MainWindow::zoomIn()
 {
@@ -283,10 +281,9 @@ void MainWindow::on_pushButton_3_clicked()
     QPixmap pixmap = *(ui->imageLabel->pixmap());
     QImage image = pixmap.toImage();
     //if (image.format() == QImage::Format_Mono) {
-        int wight = image.width();
-        int height = image.height();
-        int countOfObject = 0;
-        int **matrix;
+        wight = image.width();
+        height = image.height();
+        countOfObject_parce = 0;
 
         zeroall(matrix,wight,height);
 
@@ -302,10 +299,10 @@ void MainWindow::on_pushButton_3_clicked()
                     if ((areaA == 0) && (areaB == 0) )
                     {
                         // прибавить счетчик областей n = n + 1;
-                        countOfObject++;
+                        countOfObject_parce++;
 
                         //приписать пиксель (x,y) к области n;
-                        setArea(matrix,w,h,countOfObject);
+                        setArea(matrix,w,h,countOfObject_parce);
                     } else {
                         //если только один из пикселей (x − 1,y), (x,y − 1) отнесен к одной из областей i:
                         if ((areaA > 0) && (areaB == 0)) {
@@ -331,7 +328,6 @@ void MainWindow::on_pushButton_3_clicked()
                         }
                     }
                 }
-
 //                1. если пиксель (x,y) помечен единицей на исходном бинарном изображении:
 //                2. 	если пиксели (x − 1,y), (x,y − 1) не отнесены ни к одной из
 //                3. 	найденных областей:
@@ -350,25 +346,26 @@ void MainWindow::on_pushButton_3_clicked()
 //                16. перейти к следующему пикселю.
             }
         }
-//    } else {
-//        //бінарізіруй ізображеній!!!
-//    }
+    //draw();
 
-//        for (int i = 0; i < wight; ++i) {
-//            for (int j = 0; j < height; ++j) {
-//                std::cout << matrix[i][j] << ' ';
-//            }
-//            std::cout << std::endl;
-//        }
-//            std::cout << countOfObject << std::endl;
 
-        int elements[countOfObject];
-        for (int var = 0; var < countOfObject; ++var) {
-            elements[var] = 0;
+
+
+
+
+
+
+
+
+
+
+        int elements_parce[countOfObject_parce];
+        for (int var = 0; var < countOfObject_parce; ++var) {
+            elements_parce[var] = 0;
         }
         for (int i = 0; i < wight; ++i) {
             for (int j = 0; j < height; ++j) {
-                elements[matrix[i][j]] = 1;
+                elements_parce[matrix[i][j]] = 1;
             }
         }
 
@@ -377,8 +374,10 @@ void MainWindow::on_pushButton_3_clicked()
         // Набор векторов x_i, i = 1,…, p;
         int **klasters = new int * [p];
         int klasterIncrement = -1;
-        for (int elementId = 0; elementId < countOfObject; ++elementId) {
-            if (elements[elementId] ==1) {
+        std::vector<int> elements;
+        for (int elementId = 0; elementId < countOfObject_parce; ++elementId) {
+            if (elements_parce[elementId] ==1) {
+                elements.push_back(elementId);
                 klasterIncrement++;
                 int mySquare = square(matrix,wight,height,elementId);
                 int myPerimeter = perimetr(matrix,wight,height,elementId);
@@ -388,18 +387,23 @@ void MainWindow::on_pushButton_3_clicked()
                 klasters[klasterIncrement][1] = mySquare;
                 klasters[klasterIncrement][2] = myPerimeter;
                 klasters[klasterIncrement][3] = myDensity;
-
-                         //{elementId,mySquare,myPerimeter,myDensity};
-
             }
         }
 
-        clusters = countOfObject;
-        mat = matrix;
+        for (int i = 0; i < klasterIncrement+1; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                std::cout << klasters[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+
+        int elementsSize = (int) elements.size();
+
 
 
         // k – число кластеров, на которые нужно разбить набор .x_i
-        int countClusters = 2;
+        int countClusters = 4;
 
         //Найти:
         //k средних векторов mj, j = 1,…, k (центров кластеров);
@@ -410,34 +414,47 @@ void MainWindow::on_pushButton_3_clicked()
         //1. Случайным образом выбрать k средних m_j j = 1,…, k;
         int random_K_means_m_j[countClusters][p];
         for (int i = 0; i < countClusters; ++i) {
+            int randOmV = (rand() % (elementsSize-1)) + 1;
             for (int j = 0; j < p; ++j) {
-                int randOmV = rand() % countOfObject;
-                int elementId = elements[randOmV];
-                random_K_means_m_j[i][j] = klasters[elementId][j];
+                random_K_means_m_j[i][j] = klasters[randOmV][j];
             }
         }
 
-        //2. Для каждого xi i = 1,…,p подсчитать расстояние до каждого из mj j=1,…, k,
-        //Отнести (приписать) xi к кластеру j’, расстояние до центра которого mj’ минимально;
-        for (int i = 0; i < countOfObject; ++i) {
-            int diffArray[countClusters];
-            for (int j = 0; j < countClusters; ++j) {
-                int diff = 0;
-                for (int j_p= 0; j_p < p; ++j_p) {
-                    int elementId = elements[i];
-                    int d = (random_K_means_m_j[j_p][p]-klasters[elementId][p]);
-                    diff += d*d;
+        bool changed = false;
+
+
+        do {
+            //2. Для каждого xi i = 1,…,p подсчитать расстояние до каждого из mj j=1,…, k,
+            //Отнести (приписать) xi к кластеру j’, расстояние до центра которого mj’ минимально;
+
+            for (int i = 0; i < elementsSize; ++i) {
+                int diffArray[countClusters];
+                for (int j = 0; j < countClusters; ++j) {
+                    int diff = 0;
+                    for (int j_p= 0; j_p < p; ++j_p) {
+
+                        //std::cout << random_K_means_m_j[j][j_p] << std::endl;
+                        //std::cout << klasters[i][j_p] << std::endl;
+                        int d = (random_K_means_m_j[j][j_p]-klasters[i][j_p]);
+                        diff += d*d;
+                    }
+                    diffArray[j] = diff;
+                    //в массів діфф
                 }
-                diffArray[j] = diff;
-                //в массів діфф
                 int minIndex = getMinIndex(diffArray,countClusters);
                 //тут нужно покрасить область в в цвет кластера, которому она подходит
+                std::cout << "Объект " << elements[i] << "принадлежит " << random_K_means_m_j[minIndex][0] << std::endl;
                 updateMatrix(matrix,wight,height,elements[i],random_K_means_m_j[minIndex][0]);
             }
-        }
 
-        //3. Пересчитать средние (центр масс) mj j=1,…, k по всем кластерам;
-        //4. Повторять шаги 2, 3, пока кластеры не перестанут изменяться.
+            //3. Пересчитать средние (центр масс) mj j=1,…, k по всем кластерам;
+            changed = false;
+        } while (changed);//4. Повторять шаги 2, 3, пока кластеры не перестанут изменяться.
+
+
+
+        std::cout <<"END FUNCTION" << std::endl;
+        draw();
 }
 
 
@@ -509,8 +526,8 @@ int MainWindow::square(int **&a, int wight, int height, int elementId)
 int MainWindow::perimetr(int **&a, int wight, int height, int elementId)
 {
     int countOfPixels = 0;
-    for (int i = 0; i < wight; ++i) {
-        for (int j = 0; j < height; ++j) {
+    for (int i = 1; i < wight-1; ++i) {
+        for (int j = 1; j < height-1; ++j) {
             if (a[i][j] == elementId) {
                 if (isPerimeterPoint(a,i,j,elementId)) {
                     countOfPixels++;
@@ -525,10 +542,10 @@ int MainWindow::perimetr(int **&a, int wight, int height, int elementId)
 bool MainWindow::isPerimeterPoint(int **&a, int wight, int height, int elementId)
 {
     if (
-            (a[wight][height] != elementId)
-            || (a[wight][height] != elementId)
-            || (a[wight][height] != elementId)
-            || (a[wight][height] != elementId) ) {
+            (a[wight-1][height] != elementId)
+            || (a[wight][height-1] != elementId)
+            || (a[wight][height+1] != elementId)
+            || (a[wight-1][height] != elementId) ) {
         return true;
     } else {
         return false;
@@ -553,23 +570,31 @@ int MainWindow::getMinIndex(int * a, int size)
     return minIndex;
 }
 
+void MainWindow::draw()
+{
+    if (countOfObject_parce !=-1 ) {
+        int step = 16581375/countOfObject_parce;
+        QImage image(imageOriginal.width(),imageOriginal.height(),QImage::Format_RGB32);
+        for (int i = 0; i < imageOriginal.width(); ++i) {
+            for (int j = 0; j < imageOriginal.height(); ++j) {
+                image.setPixel(i,j,step*matrix[i][j]);
+            }
+        }
+        ui->imageLabel->setPixmap(QPixmap::fromImage(image));
+       // delete image;
+    }
+}
+
 
 
 
 
 void MainWindow::on_k_alg_but_clicked()
 {
-    if (clusters !=-1 ) {
-        mat;
-        int step = 16581375/clusters;
-        QImage image(imageOriginal.width(),imageOriginal.height(),QImage::Format_RGB32);
-        for (int i = 0; i < imageOriginal.width(); ++i) {
-            for (int j = 0; j < imageOriginal.height(); ++j) {
-                image.setPixel(i,j,step*mat[i][j]);
-            }
-        }
-        ui->imageLabel->setPixmap(QPixmap::fromImage(image));
-    }
 
+}
 
+void MainWindow::on_fitToWindowAct_triggered()
+{
+    fitToWindow();
 }
