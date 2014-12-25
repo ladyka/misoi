@@ -19,6 +19,10 @@ public class HomeController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	public final static String ATTRIBUTE_TITLE_NAME = "title";
+	public final static String ATTRIBUTE_LAB_NUMBER_NAME = "labNumber";
+	public final static String ATTRIBUTE_RESULT = "result";
+	public static final String ATTRIBUTE_IMAGE_PATH = "imagePath";
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
