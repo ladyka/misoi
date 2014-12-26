@@ -11,7 +11,7 @@
 </h1>
 
 <P>  The time on the server is ${serverTime}. </P>
-<a href="lab3" >3 лаба - DoG</a>
+<a href="labAction3" >3 лаба - DoG</a>
 <br>
 <a href="lab4" >4 лаба - сеть Кохонена</a>
 

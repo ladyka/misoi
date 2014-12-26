@@ -16,19 +16,26 @@ public class LabController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	
-	@RequestMapping(value = "lab3", method = RequestMethod.GET)
-	public String getMainLab3(Model model) {
+	@RequestMapping(value = "labAction3")
+    public String post(Model model, String imagePath,Integer matrixSize, Double weight1, Double weight2) {
+	    if (matrixSize == null) {
+	        matrixSize = 3;
+	    }
+	    
+	    if (weight1 == null) {
+	        weight1 = 0.5D;
+	    }
+	    
+	    if (weight2 == null) {
+            weight2 = 2D;
+        }
+	    
 	    model.addAttribute(ATTRIBUTE_TITLE_NAME,"lab3");
-	    model.addAttribute(ATTRIBUTE_LAB_NUMBER_NAME,3);
-	    return "labStart";
-	}
-	
-	@RequestMapping(value = "labAction3", method = RequestMethod.POST)
-    public String post(Model model, String imagePath) {
+        model.addAttribute(ATTRIBUTE_LAB_NUMBER_NAME,3);
 	    try {
             DifferenceOfGaussian differenceOfGaussian = new DifferenceOfGaussian(imagePath);
-            model.addAttribute(ATTRIBUTE_IMAGE_PATH, differenceOfGaussian.getOutPutImagePath());
-        } catch (Exception e) {
+            model.addAttribute(ATTRIBUTE_IMAGE_PATH, differenceOfGaussian.getOutPutImagePath(matrixSize, weight1, weight2));
+        } catch (Exception e) { 
             model.addAttribute(ATTRIBUTE_RESULT, e.getLocalizedMessage());
         } 
         return "lab3Result";
