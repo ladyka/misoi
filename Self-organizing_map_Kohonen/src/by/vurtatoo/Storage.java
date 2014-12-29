@@ -15,4 +15,5 @@ public class Storage {
     public static List<Letter> loadLettersImages;
     public static int letterId = 0;
     public static int imageId = 0;
+    public static Neiron n;
 }

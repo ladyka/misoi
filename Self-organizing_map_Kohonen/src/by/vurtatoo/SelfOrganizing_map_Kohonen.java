@@ -32,6 +32,7 @@ public class SelfOrganizing_map_Kohonen extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        
     }
     
 }

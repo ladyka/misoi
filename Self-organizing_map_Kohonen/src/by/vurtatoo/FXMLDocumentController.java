@@ -186,6 +186,17 @@ public class FXMLDocumentController implements Initializable {
         }
 
     }
+    
+    
+    @FXML
+    public void learnAction(ActionEvent event) {
+        
+    }
 
+    
+    @FXML
+    public void testAction(ActionEvent event) {
+        
+    }
 
 }

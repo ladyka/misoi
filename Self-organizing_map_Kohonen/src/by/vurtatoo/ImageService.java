@@ -20,12 +20,16 @@ import javax.imageio.ImageIO;
  * @author user
  */
 public class ImageService {
+    
+    final int w = 25;
+    final int h = 25;
 
     void loadImages() throws Exception {
         System.out.println("You clicked me!");
         File folderImages = new File("images");
         if (folderImages.isDirectory()) {
             Storage.loadLettersImages = getImages(folderImages.listFiles());
+            Storage.n = new Neiron(Storage.loadLettersImages.size(), w*h);
         } else {
             throw new Exception("THIS IS NOT DERICTORY !!!! PATH  : " +  folderImages.getAbsolutePath());
         }
@@ -37,7 +41,6 @@ public class ImageService {
             if (letterDirectory.isDirectory()) {
                 Letter letter = new Letter();
                 letter.setName(letterDirectory.getName());
-                //List<int[25][25]> images = new ArrayList<int[][]>();
                 for (File letterFile : letterDirectory.listFiles()) {
                     try {
                         letter.addArrayLetterViews(getLetterMatrix(letterFile),letterFile.getAbsolutePath());
@@ -59,8 +62,8 @@ public class ImageService {
             BufferedImage bufferedImage = ImageIO.read(letterFile);
             int width = bufferedImage.getWidth();
             int height = bufferedImage.getHeight();
-            if (width == 25 && height == 25 ) {
-                int [][] a = new int[25][25];
+            if (width == w && height == h ) {
+                int [][] a = new int[w][h];
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         int b = bufferedImage.getRGB(j, i);
