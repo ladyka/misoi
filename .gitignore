@@ -2,3 +2,6 @@
 *.autosave
 *.user
 
+/Self-organizing_map_Kohonen/nbproject/private/
+/Self-organizing_map_Kohonen/build/
+/Self-organizing_map_Kohonen/dist/

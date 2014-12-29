@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.vurtatoo.FXMLDocumentController">
+   <children>
+      <Button fx:id="buttonLoadImages" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#loadImagesAction" prefHeight="68.0" prefWidth="102.0" text="Load Images" />
+      <Button layoutX="127.0" layoutY="14.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="55.0" text="Learn" />
+      <Button layoutX="344.0" layoutY="16.0" mnemonicParsing="false" text="Test" />
+      <Slider fx:id="noiseSlider" layoutX="187.0" layoutY="67.0" prefHeight="16.0" prefWidth="162.0" value="10.0" />
+      <Button layoutX="186.0" layoutY="40.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="155.0" text="Add Noise" onAction="#addNoise" />
+      <Label alignment="CENTER" layoutX="199.0" layoutY="18.0" prefHeight="15.0" prefWidth="140.0" text="Noise" />
+      <ImageView fx:id="testImage" fitHeight="250.0" fitWidth="250.0" layoutX="11.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true" />
+      <Pane layoutX="400.0" layoutY="14.0" prefHeight="575.0" prefWidth="387.0">
+         <children>
+            <ImageView fx:id="image_1_1" fitHeight="100.0" fitWidth="100.0" layoutX="0.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_1_2" fitHeight="100.0" fitWidth="100.0" layoutX="120.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_1_3" fitHeight="100.0" fitWidth="100.0" layoutX="240.0" layoutY="0.0" pickOnBounds="true" preserveRatio="true" />
+            <Button layoutX="37.0" layoutY="101.0" mnemonicParsing="false" onAction="#pressImage_1_1" text="Button" />
+            <Button layoutX="147.0" layoutY="101.0" mnemonicParsing="false" onAction="#pressImage_1_2" text="Button" />
+            <Button layoutX="257.0" layoutY="101.0" mnemonicParsing="false" onAction="#pressImage_1_3" text="Button" />
+            
+            
+            <ImageView fx:id="image_2_1" fitHeight="100.0" fitWidth="100.0" layoutX="0.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_2_2" fitHeight="100.0" fitWidth="100.0" layoutX="120.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_2_3" fitHeight="100.0" fitWidth="100.0" layoutX="240.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true" />
+            <Button layoutX="37.0" layoutY="221.0" mnemonicParsing="false" onAction="#pressImage_2_1" text="Button" />
+            <Button layoutX="147.0" layoutY="221.0" mnemonicParsing="false" onAction="#pressImage_2_2" text="Button" />
+            <Button layoutX="257.0" layoutY="221.0" mnemonicParsing="false" onAction="#pressImage_2_3" text="Button" />
+            
+            <ImageView fx:id="image_3_1" fitHeight="100.0" fitWidth="100.0" layoutX="0.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_3_2" fitHeight="100.0" fitWidth="100.0" layoutX="120.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="image_3_3" fitHeight="100.0" fitWidth="100.0" layoutX="240.0" layoutY="240.0" pickOnBounds="true" preserveRatio="true" />            
+            <Button layoutX="37.0" layoutY="341.0" mnemonicParsing="false" onAction="#pressImage_3_1" text="Button" />
+            <Button layoutX="147.0" layoutY="341.0" mnemonicParsing="false" onAction="#pressImage_3_2" text="Button" />
+            <Button layoutX="257.0" layoutY="341.0" mnemonicParsing="false" onAction="#pressImage_3_3" text="Button" />
+            
+
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
