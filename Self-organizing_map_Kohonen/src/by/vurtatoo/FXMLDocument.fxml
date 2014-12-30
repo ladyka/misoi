@@ -10,10 +10,10 @@
 <AnchorPane id="AnchorPane" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.vurtatoo.FXMLDocumentController">
    <children>
       <Button fx:id="buttonLoadImages" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#loadImagesAction" prefHeight="68.0" prefWidth="102.0" text="Load Images" />
-      <Button layoutX="127.0" layoutY="14.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="55.0" text="Learn" onAction="#learnAction" />
-      <Button layoutX="344.0" layoutY="16.0" mnemonicParsing="false" text="Test" onAction="#testAction" />
+      <Button layoutX="127.0" layoutY="14.0" mnemonicParsing="false" onAction="#learnAction" prefHeight="68.0" prefWidth="55.0" text="Learn" />
+      <Button layoutX="344.0" layoutY="16.0" mnemonicParsing="false" onAction="#testAction" text="Test" />
       <Slider fx:id="noiseSlider" layoutX="187.0" layoutY="67.0" prefHeight="16.0" prefWidth="162.0" value="10.0" />
-      <Button layoutX="186.0" layoutY="40.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="155.0" text="Add Noise" onAction="#addNoise" />
+      <Button layoutX="186.0" layoutY="40.0" mnemonicParsing="false" onAction="#addNoise" prefHeight="25.0" prefWidth="155.0" text="Add Noise" />
       <Label alignment="CENTER" layoutX="199.0" layoutY="18.0" prefHeight="15.0" prefWidth="140.0" text="Noise" />
       <ImageView fx:id="testImage" fitHeight="250.0" fitWidth="250.0" layoutX="11.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true" />
       <Pane layoutX="400.0" layoutY="14.0" prefHeight="575.0" prefWidth="387.0">
@@ -43,5 +43,6 @@
 
          </children>
       </Pane>
+      <TextArea fx:id="textArea" layoutX="16.0" layoutY="386.0" prefHeight="200.0" prefWidth="361.0" />
    </children>
 </AnchorPane>

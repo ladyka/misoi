@@ -56,38 +56,40 @@ public class ImageService {
         return letters;
     }
 
-    private int [][] getLetterMatrix(File letterFile) throws Exception {
-        String errorMessage;
+    private int [][] getLetterMatrix(File letterFile) throws IOException {
         if (letterFile.isFile()) {
             BufferedImage bufferedImage = ImageIO.read(letterFile);
-            int width = bufferedImage.getWidth();
-            int height = bufferedImage.getHeight();
-            if (width == w && height == h ) {
-                int [][] a = new int[w][h];
-                for (int i = 0; i < width; i++) {
-                    for (int j = 0; j < height; j++) {
-                        int b = bufferedImage.getRGB(j, i);
-                        if (b < -1) {
-                            b = 1;
-                        } else {
-                            b = 0;
-                        }
-                        a[j][i] = b;
-                       // System.out.print(b + " ");
-                    }
-                    //System.out.println(" ");
-                }
-                //System.out.println(" +  ");
-                return a;
+            if (checkRangeImage(bufferedImage)) {
+                return convertToArray(bufferedImage);
             } else {
-                errorMessage = "Fail size image " + letterFile.getAbsolutePath();
+                throw new RuntimeException("Fail size image " + letterFile.getAbsolutePath());
             }
         } else {
-            errorMessage = "This is not file " + letterFile.getAbsolutePath();
+            throw new RuntimeException("This is not file " + letterFile.getAbsolutePath());
         }
-        throw new Exception(errorMessage);
+        
     }
     
-   
-    
+    public int[][] convertToArray(BufferedImage bufferedImage) {
+        int[][] a = new int[w][h];
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                int b = bufferedImage.getRGB(j, i);
+                if (b < -1) {
+                    b = 1;
+                } else {
+                    b = 0;
+                }
+                a[j][i] = b;
+                 System.out.print(b + " ");
+            }
+            System.out.println(" ");
+        }
+        System.out.println(" +  ");
+        return a;
+    }
+
+    public boolean checkRangeImage(BufferedImage bufferedImage) {
+        return (bufferedImage.getWidth() == w && bufferedImage.getHeight() == h );
+    }
 }

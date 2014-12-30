@@ -5,6 +5,7 @@
  */
 package by.vurtatoo;
 
+import com.sun.javafx.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,10 @@ import java.util.stream.Stream;
  * @author user
  */
 public class Neiron {
-
+    
+    final int w = 25;
+    final int h = 25;
+    
     private double[][] _weights;
     public double accuracy;
 
@@ -28,7 +32,6 @@ public class Neiron {
     private int OutputNeuronCount;
 
     public Neiron(int countClass, int size) {
-
         InputNeuronCount = size;
         OutputNeuronCount = countClass;
         ClassCount = countClass;
@@ -48,66 +51,113 @@ public class Neiron {
     }
     
     public void learn(List<Letter> letters) {
-        List<Integer[]>  listVector = getVectors(letters);
-        /*int[][] a = new int[1][2];
-        int[] b = new int[Stream.of(a).flatMap(Stream::of).collect(Collectors.toList()).size()][]
-        Stream.of(a).flatMap(Stream::of).collect(Collectors.toList()).toArray(b);*/
+        List<Integer[]>  listVectors = getVectors(letters);
+        
+
+        List<Double> errors = new ArrayList<>();
+        while(true) {
+            listVectors.stream().forEach((listVector) -> {
+                //double[] y = calculate(listVector);
+                List<Double> d = new ArrayList<>(OutputNeuronCount);
+                for (int j = 0; j < OutputNeuronCount; j++) {
+                    d.add(distanceEuclid(getW(j),listVector)*frec[j]);
+                }
+                int dwinIndex = getMinIndex(d);
+                for(int j = 0 ;j < InputNeuronCount; j++) {
+                    _weights[j][dwinIndex] += betta*listVector[j] - _weights[j][dwinIndex];
+                }
+                frec[dwinIndex]++;
+                errors.add(distanceEuclid(getW(dwinIndex), listVector));
+            });
+            if (errors.get(getMaxIndex(errors)) < accuracy) 
+                break;
+        }
     }
-//    public void Learn(List<Bitmap> ListBtm)
-//    {
-//
-//
-//    List<double[]> listVector = ListBtm.ConvertAll(x => x.GetVector()).ToList();
-//    while(true)
-//    {
-//    var error = new List<double>();
-//
-//    foreach(var source in listVector)
-//    {
-//    double[] y = calculate(source);
-//    List<double> d = Enumerable.Range(0,OutputNeuronCount)
-//    .Select(j => distanceEuclid(getW(j),source)*frec[j])
-//    .ToList();
-//
-//    int dwin = d.IndexOf(d.Min());
-//
-//    for(int j = 0 ;j < InputNeuronCount; j++)
-//    {
-//    _weights[j,dwin] += betta*source[j] - _weights[j,dwin];
-//    }
-//
-//
-//    frec[dwin]++;
-//    error.Add(distanceEuclid(getW(dwin), source));
-//    }
-//
-//    if(error.Max() < Accuracy) break;
-//    }
-//
-//    }
 
     private List<Integer[]> getVectors(List<Letter> letters) {
-        List<Integer[]> integers = new ArrayList<>();
-        
-        for (Letter letter : letters) {
-            for (Letter.ArrayLetterView a : letter.getArrayLetterViews()) {
-                //Integer[] vector = new Integer[25*25];
-                
-                Integer[] vector = convertArray(a.getArray());
-                
-            }
-        }
-        
-        
-        return integers;
+        List<Integer[]> vectors = new ArrayList<>();
+        letters.stream().forEach((letter) -> {
+            letter.getArrayLetterViews().stream().forEach((a) -> {
+                vectors.add(convertArray(a.getArray()));
+            });
+        });
+        return vectors;
     }
 
-    private Integer[] convertArray(int[][] arr) {
+    public Integer[] convertArray(int[][] arr) {
         Integer[] array;
-        array = new Integer[25*25];
-        
-        
-        
+        array = new Integer[w*h];
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                array[i*h+j] = arr[i][j];
+            }
+        }
         return array;
     }
+    
+    public double[] calculate(Integer[] source) {
+        double[] y = new double[OutputNeuronCount];
+
+        for (int j = 0; j < OutputNeuronCount; j++) {
+            for (int i = 0; i < InputNeuronCount; i++) {
+                y[j] += source[i] * _weights[i][j];
+            }
+        }
+
+        return y;
+    }
+    
+    /**
+     * return Enumerable.Range(0,InputNeuronCount).Select(i => ).ToArray();
+     */
+    private double[] getW(int j) {
+        double[] wtf1Question = new double[InputNeuronCount];
+        for (int i = 0; i < InputNeuronCount; i++) {
+            wtf1Question[i] = _weights[i][j];
+        }
+        return wtf1Question;
+    }
+
+    /**
+     * return Math.Sqrt(vec1.Select((x,i) => Math.Pow(vec1[i]-vec2[i],2)).Sum());
+     * @param w
+     * @param listVector
+     * @return 
+     */
+    private double distanceEuclid(double[] a, Integer[] b) {
+        double returnValue = 0;
+        if (a.length == b.length) {
+            for (int i = 0; i < a.length; i++) {
+                returnValue += Math.pow((a[i]-b[i]), 2);
+            }
+        } else {
+            throw new RuntimeException("a.length != b.length");
+        }
+        return Math.sqrt(returnValue);
+    }
+
+    private int getMinIndex(List<Double> d) {
+        int minIndex = 0;
+        double minValue = d.get(minIndex);
+        for (int i = 1; i < d.size(); i++) {
+            if (minValue > d.get(i)) {
+                minIndex = i;
+                minValue = d.get(i);
+            }
+        }
+        return minIndex;
+    }
+    
+    private int getMaxIndex(List<Double> d) {
+        int maxIndex = 0;
+        double maxValue = d.get(maxIndex);
+        for (int i = 1; i < d.size(); i++) {
+            if (maxValue < d.get(i)) {
+                maxIndex = i;
+                maxValue = d.get(i);
+            }
+        }
+        return maxIndex;
+    }
+    
 }
