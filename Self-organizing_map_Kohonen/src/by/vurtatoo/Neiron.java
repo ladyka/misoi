@@ -18,10 +18,10 @@ import java.util.stream.Stream;
  * @author user
  */
 public class Neiron {
-    
+
     final int w = 25;
     final int h = 25;
-    
+
     private double[][] _weights;
     public double accuracy;
 
@@ -49,28 +49,35 @@ public class Neiron {
     public void setAccuracy(double accuracy) {
         this.accuracy = accuracy;
     }
-    
-    public void learn(List<Letter> letters) {
-        List<Integer[]>  listVectors = getVectors(letters);
-        
 
-        List<Double> errors = new ArrayList<>();
-        while(true) {
-            listVectors.stream().forEach((listVector) -> {
+    public void learn(List<Letter> letters) {
+        List<Integer[]> listVectors = getVectors(letters);
+
+        int iter = 0;
+        while (iter < 1500) {
+            List<Double> errors = new ArrayList<>();
+            int currentneron = 0;
+            //listVectors.stream().forEach((listVector) -> {
+            for (Integer[] listVector : listVectors) {
                 //double[] y = calculate(listVector);
                 List<Double> d = new ArrayList<>(OutputNeuronCount);
                 for (int j = 0; j < OutputNeuronCount; j++) {
-                    d.add(distanceEuclid(getW(j),listVector)*frec[j]);
+                    d.add(distanceEuclid(getW(j), listVector) * frec[j]);
                 }
                 int dwinIndex = getMinIndex(d);
-                for(int j = 0 ;j < InputNeuronCount; j++) {
-                    _weights[j][dwinIndex] += betta*listVector[j] - _weights[j][dwinIndex];
+                for (int j = 0; j < InputNeuronCount; j++) {
+                    double value = GetFunKohonen(j, dwinIndex, currentneron);
+                    _weights[j][dwinIndex] += betta * value *listVector[j] - _weights[j][dwinIndex];
                 }
                 frec[dwinIndex]++;
+                currentneron++;
                 errors.add(distanceEuclid(getW(dwinIndex), listVector));
-            });
-            if (errors.get(getMaxIndex(errors)) < accuracy) 
+                
+            }
+            if (errors.get(getMaxIndex(errors)) < accuracy) {
                 break;
+            }
+            iter++;
         }
     }
 
@@ -86,15 +93,15 @@ public class Neiron {
 
     public Integer[] convertArray(int[][] arr) {
         Integer[] array;
-        array = new Integer[w*h];
+        array = new Integer[w * h];
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
-                array[i*h+j] = arr[i][j];
+                array[i * h + j] = arr[i][j];
             }
         }
         return array;
     }
-    
+
     public double[] calculate(Integer[] source) {
         double[] y = new double[OutputNeuronCount];
 
@@ -106,7 +113,7 @@ public class Neiron {
 
         return y;
     }
-    
+
     /**
      * return Enumerable.Range(0,InputNeuronCount).Select(i => ).ToArray();
      */
@@ -119,16 +126,18 @@ public class Neiron {
     }
 
     /**
-     * return Math.Sqrt(vec1.Select((x,i) => Math.Pow(vec1[i]-vec2[i],2)).Sum());
+     * return Math.Sqrt(vec1.Select((x,i) =>
+     * Math.Pow(vec1[i]-vec2[i],2)).Sum());
+     *
      * @param w
      * @param listVector
-     * @return 
+     * @return
      */
     private double distanceEuclid(double[] a, Integer[] b) {
         double returnValue = 0;
         if (a.length == b.length) {
             for (int i = 0; i < a.length; i++) {
-                returnValue += Math.pow((a[i]-b[i]), 2);
+                returnValue += Math.pow((a[i] - b[i]), 2);
             }
         } else {
             throw new RuntimeException("a.length != b.length");
@@ -147,7 +156,7 @@ public class Neiron {
         }
         return minIndex;
     }
-    
+
     private int getMaxIndex(List<Double> d) {
         int maxIndex = 0;
         double maxValue = d.get(maxIndex);
@@ -159,5 +168,12 @@ public class Neiron {
         }
         return maxIndex;
     }
-    
+
+    private double GetFunKohonen(int t, int k, int j) {
+        if (k == j) {
+            return 1.0;
+        } else {
+            return 1 / Math.sqrt(2 * Math.PI) * Math.pow(Math.E, -t * t / 2);
+        }
+    }
 }

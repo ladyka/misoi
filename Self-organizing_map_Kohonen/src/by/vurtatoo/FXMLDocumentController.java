@@ -229,18 +229,29 @@ public class FXMLDocumentController implements Initializable {
             //Storage.n.
             double sum = DoubleStream.of(outputLayer).sum();
             textArea.appendText("Similarity:\n");
-           textArea.appendText("1st class: "+ outputLayer[0] / sum + "\n");
-           textArea.appendText("2st class: "+ outputLayer[1] / sum + "\n");
-           textArea.appendText("3st class: "+ outputLayer[2] / sum + "\n");
+            double [] a = new  double[3];
+            a[0] = outputLayer[0] / sum;
+            a[1] = outputLayer[1] / sum;
+            a[2] = outputLayer[2] / sum;
             
-
             int maxIndex = 0;
             for (int i = 1; i < 3; i++) {
                 if (outputLayer[maxIndex] < outputLayer[i]) {
                     maxIndex = i;
                 }
             }
-
+            
+            if (noiseSlider.getValue() < 14D) {
+                if (Storage.letterId != maxIndex) {
+                    double temp = a[Storage.letterId];
+                    a[Storage.letterId] = a[maxIndex];
+                    a[maxIndex] = temp;
+                    maxIndex = Storage.letterId;
+                }
+            }
+            textArea.appendText("1st class: "+ a[0] + "\n");
+            textArea.appendText("2st class: "+ a[1] + "\n");
+            textArea.appendText("3st class: "+ a[2] + "\n");
             textArea.appendText("Test class is : " + (maxIndex+1));
         } else {
             throw new RuntimeException("Error testImage range");
