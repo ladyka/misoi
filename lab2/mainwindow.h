@@ -107,6 +107,7 @@ private:
     void setArea(int **&a, int wight, int height, int area);
     int minimum(int a,int b);
     void updateMatrix(int **&a, int wight, int height, int i, int j);
+    void updateMatrixPrin(int **&a, int wight, int height, int areaA, int areaB);
     int square(int **&a, int wight, int height,int elementId);
     int perimetr(int **&a, int wight, int height,int elementId);
     bool isPerimeterPoint(int **&a, int wight, int height, int elementId);
@@ -117,11 +118,9 @@ private:
     int wight;
     int height;
 
-
     int getMinIndex(int * a,int size);
     void draw();
-
-
+    //int cost(int ***vectors, int * &sizes, int countClusters, int p, int **&random_K_means_m_j, int var);
 };
 
 #endif // MAINWINDOW_H

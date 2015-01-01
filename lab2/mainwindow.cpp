@@ -35,7 +35,7 @@ void MainWindow::on_actionOpen_triggered()
     // /home/user/projects/misoi/lab2
     // QDir::currentPath()
     QFileDialog dialog(this, tr("Open File"),
-                       picturesLocations.isEmpty() ? QDir::currentPath(): "/home/user/projects/misoi/lab2" );
+                       picturesLocations.isEmpty() ? QDir::currentPath(): "/home/user/project/misoi/lab2" );
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setMimeTypeFilters(mimeTypeFilters);
     dialog.selectMimeTypeFilter("image/png");
@@ -403,7 +403,7 @@ void MainWindow::on_pushButton_3_clicked()
 
 
         // k – число кластеров, на которые нужно разбить набор .x_i
-        int countClusters = 4;
+        int countClusters = 3;
 
         //Найти:
         //k средних векторов mj, j = 1,…, k (центров кластеров);
@@ -420,12 +420,30 @@ void MainWindow::on_pushButton_3_clicked()
             }
         }
 
+
+        // **************************** //
+        std::cout << "Случайные векторы " <<std::endl;
+        for (int i = 0; i < countClusters; ++i) {
+            std::cout <<std::endl << i << " : ";
+            for (int j = 0; j < p; ++j) {
+                std::cout << random_K_means_m_j[i][j] << " ";
+            }
+        }
+        std::cout <<std::endl;
+        // **************************** //
         bool changed = false;
 
 
         do {
+            changed = false;
             //2. Для каждого xi i = 1,…,p подсчитать расстояние до каждого из mj j=1,…, k,
             //Отнести (приписать) xi к кластеру j’, расстояние до центра которого mj’ минимально;
+
+            int vectors[countClusters][elementsSize][p];
+            int sizes[countClusters];
+            for (int var = 0; var < countClusters; ++var) {
+                sizes[var] = 0;
+            }
 
             for (int i = 0; i < elementsSize; ++i) {
                 int diffArray[countClusters];
@@ -444,19 +462,141 @@ void MainWindow::on_pushButton_3_clicked()
                 int minIndex = getMinIndex(diffArray,countClusters);
                 //тут нужно покрасить область в в цвет кластера, которому она подходит
                 std::cout << "Объект " << elements[i] << "принадлежит " << random_K_means_m_j[minIndex][0] << std::endl;
-                updateMatrix(matrix,wight,height,elements[i],random_K_means_m_j[minIndex][0]);
+                //updateMatrix(matrix,wight,height,elements[i],random_K_means_m_j[minIndex][0]);
+
+                //sorting po clasteram
+                for (int var = 0; var < p; ++var) {
+                    int clusterParam = klasters[i][var];
+                    vectors[minIndex][sizes[minIndex]][var] = clusterParam;
+                }
+                sizes[minIndex]++;
+
+
             }
 
+            for (int i = 0; i < countClusters; ++i) {
+                if (sizes[i]>1) {
+
+                    int q1 = 0;
+                    for (int j = 0; j < sizes[i]; ++j) {
+                        int diff = 0;
+                        for (int j_p= 0; j_p < p; ++j_p) {
+                            int d = (vectors[i][j][j_p]-random_K_means_m_j[i][j_p]);
+                            diff += d*d;
+                        }
+                        q1 += sqrt(diff);
+                    }
+
+                    int minGoodValueQ = q1;
+
+                    //int randOmV = rand() % sizes[i];
+                    for (int randOmV = 0; randOmV < sizes[i]; ++randOmV) {
+
+                    /// ******************************* ///
+                    //int q1 = cost(vectors,sizes,countClusters,p,random_K_means_m_j,var);
+                    //int q2 = cost(vectors,sizes,countClusters,p,random_K_means_m_j,var);
+
+
+                    int q2 = 0;
+                        for (int j = 0; j < sizes[i]; ++j) {
+                            int diff = 0;
+                            for (int j_p= 0; j_p < p; ++j_p) {
+                                //std::cout << vectors[i][j][j_p];
+                                //std::cout << vectors[i][randOmV][j_p];
+                                int d = (vectors[i][j][j_p]-vectors[i][randOmV][j_p]);
+                                diff += d*d;
+                            }
+                            q2 += sqrt(diff);
+                        }
+
+                    // ******************************* //
+
+                    if (minGoodValueQ > q2) {
+                        for (int var_p = 0; var_p < p; ++var_p) {
+                            //std::cout << random_K_means_m_j[i][var_p];
+                            //std::cout << vectors[i][randOmV][var_p];
+                            random_K_means_m_j[i][var_p] = vectors[i][randOmV][var_p];
+                            changed = true;
+                        }
+                    }
+
+
+
+
+                    }
+                }
+
+            }
+            // **************************** //
+            std::cout <<std::endl;
+            for (int i = 0; i < countClusters; ++i) {
+                std::cout <<std::endl << i << " _ " <<random_K_means_m_j[i][0] << " : ";
+                for (int j = 0; j < sizes[i]; ++j) {
+                    std::cout << vectors[i][j][0] << " ";
+                }
+            }
+            std::cout <<std::endl;
+            // **************************** //
+
             //3. Пересчитать средние (центр масс) mj j=1,…, k по всем кластерам;
-            changed = false;
+            if (!changed) {
+                //
+                //int vectors[countClusters][elementsSize][p];
+
+                // **************************** //
+                std::cout <<  "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                for (int i = 0; i < countClusters; ++i) {
+                    std::cout <<std::endl << i << " _ " <<random_K_means_m_j[i][0] << " : ";
+                    for (int j = 0; j < sizes[i]; ++j) {
+                        std::cout << vectors[i][j][0] << " ";
+                    }
+                }
+                std::cout <<std::endl;
+                // **************************** //
+
+                // **************************** //
+                std::cout <<  "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                std::cout <<std::endl;
+                for (int i = 0; i < countClusters; ++i) {
+                    std::cout <<std::endl << i << " _ " <<random_K_means_m_j[i][0] << " : ";
+                    for (int j = 0; j < sizes[i]; ++j) {
+                        std::cout << vectors[i][j][0] << " ";
+                    }
+                }
+                std::cout <<std::endl;
+                // **************************** //
+
+                for (int i = 0; i < countClusters; ++i) {
+                    for (int j = 0; j < sizes[i]; ++j) {
+
+                        int elementID = vectors[i][j][0];
+                        int elemId = random_K_means_m_j[i][0];
+                        std::cout << "Update from  " << elementID << " to " <<elemId << std::endl;
+                        updateMatrixPrin(matrix,wight,height,elementID,elemId);
+                    }
+                }
+
+                // **************************** //
+                std::cout <<  "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                std::cout <<std::endl;
+                for (int i = 0; i < countClusters; ++i) {
+                    std::cout <<std::endl << i << " _ " <<random_K_means_m_j[i][0] << " : ";
+                    for (int j = 0; j < sizes[i]; ++j) {
+                        std::cout << vectors[i][j][0] << " ";
+                    }
+                }
+                std::cout <<std::endl;
+                // **************************** //
+                draw();
+            }
+
         } while (changed);//4. Повторять шаги 2, 3, пока кластеры не перестанут изменяться.
 
 
 
         std::cout <<"END FUNCTION" << std::endl;
-        draw();
-}
 
+}
 
 void MainWindow::zeroall(int **&a, int wight, int height)
 {
@@ -500,6 +640,17 @@ void MainWindow::updateMatrix(int **&a, int wight, int height, int i, int j)
         areaA = i;
         areaB = j;
     }
+    for (int i = 0;i <wight; i++) {
+        for (int j = 0; j<height; ++j) {
+            if (a[i][j] == areaB) {
+                a[i][j] = areaA;
+            }
+        }
+    }
+}
+
+void MainWindow::updateMatrixPrin(int **&a, int wight, int height, int areaA, int areaB)
+{
     for (int i = 0;i <wight; i++) {
         for (int j = 0; j<height; ++j) {
             if (a[i][j] == areaB) {
@@ -572,11 +723,20 @@ int MainWindow::getMinIndex(int * a, int size)
 
 void MainWindow::draw()
 {
+    for (int i = 0; i < imageOriginal.width(); ++i) {
+        for (int j = 0; j < imageOriginal.height(); ++j) {
+            std::cout << matrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
     if (countOfObject_parce !=-1 ) {
         int step = 16581375/countOfObject_parce;
-        QImage image(imageOriginal.width(),imageOriginal.height(),QImage::Format_RGB32);
-        for (int i = 0; i < imageOriginal.width(); ++i) {
-            for (int j = 0; j < imageOriginal.height(); ++j) {
+        int w = imageOriginal.width();
+        int h = imageOriginal.height();
+        QImage image(w,h,QImage::Format_RGB32);
+        for (int i = 0; i < w; ++i) {
+            for (int j = 0; j < h; ++j) {
                 image.setPixel(i,j,step*matrix[i][j]);
             }
         }
@@ -584,6 +744,11 @@ void MainWindow::draw()
        // delete image;
     }
 }
+
+//int MainWindow::cost(int ***vectors, int *&sizes, int countClusters, int p, int **&random_K_means_m_j, int var)
+//{
+
+//}
 
 
 
